@@ -38,7 +38,7 @@ public class Client extends Communicative
         }
     }
 
-    private void sendMessageToServer(String message) throws IOException {
+    public void sendMessageToServer(String message) throws IOException {
         writer.write(message);
         writer.newLine();
         writer.flush();

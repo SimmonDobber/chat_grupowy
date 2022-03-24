@@ -9,30 +9,22 @@ public class ClientHandler extends Communicative implements Runnable {
 
     public ClientHandler(Socket socket) throws IOException {
         super(socket);
-        this.username = reader.readLine();
+        username = reader.readLine();
         clientHandlers.add(this);
         broadcastMessage("SERVER: " + username + " has entered the chat!");
     }
 
     @Override
     public void run() {
-        while (socket.isConnected()) {
-            try {
+        try {
+            while (socket.isConnected())
                 broadcastMessage(reader.readLine());
-            } catch (IOException e) {
-                clientHandlers.remove(this);
-                closeConnection();
-            }
+        } catch (IOException e) {
+            closeSession();
         }
     }
 
     private void broadcastMessage(String message) throws IOException {
-        if(message == null)
-            throw new IOException("Client has disconnected.");
-        sendMessageToClients(message);
-    }
-
-    private void sendMessageToClients(String message) throws IOException {
         for (ClientHandler client : clientHandlers) {
             if (!client.username.equals(username))
                 sendMessageToClient(message, client);
@@ -45,5 +37,17 @@ public class ClientHandler extends Communicative implements Runnable {
         client.writer.flush();
     }
 
+    private void closeSession(){
+        broadcastChatLeaveMessage();
+        clientHandlers.remove(this);
+        closeConnection();
+    }
 
+    private void broadcastChatLeaveMessage(){
+        try {
+            broadcastMessage("SERVER: " + username + " has left the chat!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -29,7 +29,6 @@ public class Server
     private void addClient() throws IOException {
         Thread thread = new Thread(new ClientHandler(socket.accept()));
         thread.start();
-        System.out.println("A new client has connected!");
     }
 
     private void closeServerSocket() {
