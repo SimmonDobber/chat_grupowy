@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.ServerSocket;
+import java.util.Date;
 
 public class Server
 {
@@ -21,13 +22,14 @@ public class Server
         try {
             while (!socket.isClosed())
                 addClient();
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             closeServerSocket();
         }
     }
 
-    private void addClient() throws IOException {
-        Thread thread = new Thread(new ClientHandler(socket.accept()));
+    private void addClient() throws IOException, ClassNotFoundException {
+        ClientHandler clientHandler = new ClientHandler(socket.accept(), new Date());
+        Thread thread = new Thread(clientHandler);
         thread.start();
     }
 
